@@ -4,7 +4,7 @@ import { UtensilsCrossed } from 'lucide-react'
 
 export default function Login() {
   const signIn = () => supabase().auth.signInWithOAuth({
-    provider: 'google', options: { redirectTo: `${location.origin}/auth/callback` },
+    provider: 'google', options: { redirectTo: `${location.origin}/auth/callback`, queryParams: { prompt: 'select_account' } },
   })
   return (
     <main className="min-h-dvh grid place-items-center bg-stone-50 p-6">

@@ -1,36 +1,25 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Check, Copy, RefreshCw, UserMinus } from 'lucide-react'
+import { Check, Copy, RefreshCw, UserMinus } from 'lucide-react'
 import { supabase } from '@/lib/supabase/client'
+import AppShell from '@/components/AppShell'
 import MealWeek from '@/components/MealWeek'
-import AdminOverview from '@/components/AdminOverview'
 
-export default function Admin() {
+function Body({ tz }: { tz: string }) {
   const sb = supabase()
-  const [code, setCode] = useState(''), [tz, setTz] = useState<string>(), [members, setMembers] = useState<any[]>([])
-  const [sel, setSel] = useState<string>(''), [err, setErr] = useState('')
-  const [tick, setTick] = useState(0)
-
+  const [code, setCode] = useState(''), [members, setMembers] = useState<any[]>([])
+  const [sel, setSel] = useState(''), [err, setErr] = useState('')
   const load = useCallback(async () => {
-    const [c, m, f] = await Promise.all([
-      sb.rpc('get_access_code'),
-      sb.from('profiles').select('id,name,email,role,status').order('role'),
-      sb.from('flats').select('timezone').single()])
-    setCode(c.data ?? ''); setMembers(m.data ?? []); setTz(f.data?.timezone)
+    const [c, m] = await Promise.all([sb.rpc('get_access_code'), sb.from('profiles').select('id,name,email,role,status').order('role')])
+    setCode(c.data ?? ''); setMembers(m.data ?? [])
     setSel((s) => s || m.data?.find((x) => x.status === 'active')?.id || '')
   }, [])
   useEffect(() => { load() }, [load])
-
   const act = async (fn: string, args?: object) => { setErr(''); const { error } = await sb.rpc(fn, args); error ? setErr(error.message) : load() }
-  if (!tz) return <p className="p-6 text-stone-500">Loading…</p>
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 p-4 sm:p-6">
-      <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-stone-600"><ArrowLeft className="h-4 w-4" />Back</Link>
+    <div className="space-y-8">
       {err && <p className="text-sm text-red-600">{err}</p>}
-      <AdminOverview tz={tz} members={members.filter((m) => m.status === 'active')} tick={tick} />
-
       <section className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
         <h2 className="font-semibold">Flat access code</h2>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -39,7 +28,6 @@ export default function Admin() {
           <button onClick={() => confirm('Old code stops working. Continue?') && act('regenerate_code')} className="inline-flex items-center gap-1 rounded-lg border px-3 py-2 text-sm"><RefreshCw className="h-4 w-4" />Reset code</button>
         </div>
       </section>
-
       <section className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
         <h2 className="font-semibold">Flatmates</h2>
         <ul className="mt-3 divide-y">
@@ -54,15 +42,15 @@ export default function Admin() {
             </li>))}
         </ul>
       </section>
-
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="font-semibold">Override meals (ignores the midnight lock)</h2>
+          <h2 className="font-semibold">Override meals <span className="text-sm font-normal text-stone-500">(ignores the midnight lock)</span></h2>
           <select value={sel} onChange={(e) => setSel(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
             {members.filter((m) => m.status === 'active').map((m) => <option key={m.id} value={m.id}>{m.name ?? m.email}</option>)}
           </select>
         </div>
-        {sel && <MealWeek key={sel} userId={sel} tz={tz} admin onChange={() => setTick((t) => t + 1)} />}
+        {sel && <MealWeek key={sel} userId={sel} tz={tz} admin />}
       </section>
-    </main>)
+    </div>)
 }
+export default function Admin() { return <AppShell title="Manage flat">{({ tz }) => <Body tz={tz} />}</AppShell> }
