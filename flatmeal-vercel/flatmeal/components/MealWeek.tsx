@@ -11,7 +11,7 @@ const Switch = ({ on, disabled, label, onClick }: { on: boolean; disabled: boole
     <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${on ? 'left-[22px]' : 'left-0.5'}`} />
   </button>)
 
-export default function MealWeek({ userId, tz, admin = false }: { userId: string; tz: string; admin?: boolean }) {
+export default function MealWeek({ userId, tz, admin = false, onChange }: { userId: string; tz: string; admin?: boolean; onChange?: () => void }) {
   const sb = supabase()
   const [start, setStart] = useState(mondayOf(todayISO(tz)))
   const [meals, setMeals] = useState<Record<string, M>>({})
@@ -31,7 +31,7 @@ export default function MealWeek({ userId, tz, admin = false }: { userId: string
     const cur = meals[date] ?? { lunch: 1, dinner: 1 }, next = { ...cur, [k]: cur[k] ? 0 : 1 }
     setMeals((m) => ({ ...m, [date]: next })); setErr('')
     const { error } = await sb.rpc('set_meal', { p_user: userId, p_date: date, p_lunch: next.lunch, p_dinner: next.dinner })
-    if (error) { setErr(error.message); load() }
+    if (error) { setErr(error.message); load() } else onChange?.()
   }
 
   return (
