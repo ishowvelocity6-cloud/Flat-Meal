@@ -4,11 +4,13 @@ import Link from 'next/link'
 import { ArrowLeft, Check, Copy, RefreshCw, UserMinus } from 'lucide-react'
 import { supabase } from '@/lib/supabase/client'
 import MealWeek from '@/components/MealWeek'
+import AdminOverview from '@/components/AdminOverview'
 
 export default function Admin() {
   const sb = supabase()
   const [code, setCode] = useState(''), [tz, setTz] = useState<string>(), [members, setMembers] = useState<any[]>([])
   const [sel, setSel] = useState<string>(''), [err, setErr] = useState('')
+  const [tick, setTick] = useState(0)
 
   const load = useCallback(async () => {
     const [c, m, f] = await Promise.all([
@@ -27,6 +29,7 @@ export default function Admin() {
     <main className="mx-auto max-w-5xl space-y-8 p-4 sm:p-6">
       <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-stone-600"><ArrowLeft className="h-4 w-4" />Back</Link>
       {err && <p className="text-sm text-red-600">{err}</p>}
+      <AdminOverview tz={tz} members={members.filter((m) => m.status === 'active')} tick={tick} />
 
       <section className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
         <h2 className="font-semibold">Flat access code</h2>
@@ -59,7 +62,7 @@ export default function Admin() {
             {members.filter((m) => m.status === 'active').map((m) => <option key={m.id} value={m.id}>{m.name ?? m.email}</option>)}
           </select>
         </div>
-        {sel && <MealWeek key={sel} userId={sel} tz={tz} admin />}
+        {sel && <MealWeek key={sel} userId={sel} tz={tz} admin onChange={() => setTick((t) => t + 1)} />}
       </section>
     </main>)
 }
