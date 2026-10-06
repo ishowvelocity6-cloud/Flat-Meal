@@ -2,7 +2,7 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Camera, CalendarDays, ChefHat, LogOut, Menu, Settings, UserCog, Users, X } from 'lucide-react'
+import { Camera, CalendarDays, ChefHat, LogOut, Megaphone, Menu, Receipt, Settings, UserCog, Users, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase/client'
 
 export type Me = { id: string; name: string | null; email: string | null; avatar_url: string | null; role: string }
@@ -34,7 +34,9 @@ export default function AppShell({ title, children }: { title: string; children:
   const { me } = ctx
   const nav = [
     { href: '/dashboard', label: 'My meals', Icon: CalendarDays },
+    { href: '/notices', label: 'Notices', Icon: Megaphone },
     { href: '/meal-count', label: 'Meal count', Icon: ChefHat },
+    { href: '/expenses', label: 'Expenses & bills', Icon: Receipt },
     { href: '/members', label: 'Members', Icon: Users },
     ...(me.role === 'admin' ? [{ href: '/admin', label: 'Manage flat', Icon: Settings }] : []),
   ]
