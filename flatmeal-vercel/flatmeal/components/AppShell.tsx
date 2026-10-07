@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Camera, CalendarDays, ChefHat, LogOut, Megaphone, Menu, Receipt, Settings, UserCog, Users, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase/client'
+import Loader from '@/components/Loader'
 
 export type Me = { id: string; name: string | null; email: string | null; avatar_url: string | null; role: string }
 export type Ctx = { me: Me; tz: string; flat: string }
@@ -15,6 +16,7 @@ export const Avatar = ({ url, name, size = 36 }: { url?: string | null; name?: s
 export default function AppShell({ title, children }: { title: string; children: (c: Ctx) => ReactNode }) {
   const sb = supabase(), router = useRouter(), path = usePathname()
   const [ctx, setCtx] = useState<Ctx>()
+  const [intro, setIntro] = useState(true)
   const [menu, setMenu] = useState(false), [prof, setProf] = useState(false), [edit, setEdit] = useState(false)
 
   const load = useCallback(async () => {
@@ -24,13 +26,20 @@ export default function AppShell({ title, children }: { title: string; children:
     setCtx({ me: me as Me, tz: f?.timezone ?? 'Asia/Dhaka', flat: f?.name ?? '' })
   }, [])
   useEffect(() => { load() }, [load])
+  useEffect(() => { // meme intro: shown ~3s on a fresh open/reload, skipped when moving between pages
+    let seen = false
+    try { seen = !!sessionStorage.getItem('intro-seen') } catch {}
+    if (seen) return setIntro(false)
+    const t = setTimeout(() => { try { sessionStorage.setItem('intro-seen', '1') } catch {} setIntro(false) }, 3000)
+    return () => clearTimeout(t)
+  }, [])
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { setMenu(false); setProf(false) } }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   }, [])
   const signOut = async () => { await sb.auth.signOut(); router.replace('/login'); router.refresh() }
 
-  if (!ctx) return <p className="p-6 text-stone-500">Loading…</p>
+  if (!ctx || intro) return <Loader />
   const { me } = ctx
   const nav = [
     { href: '/dashboard', label: 'My meals', Icon: CalendarDays },
