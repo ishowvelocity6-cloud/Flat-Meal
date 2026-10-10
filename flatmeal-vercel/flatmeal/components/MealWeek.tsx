@@ -18,6 +18,7 @@ export default function MealWeek({ userId, tz, admin = false, onChange }: { user
   const [left, setLeft] = useState(msToMidnight(tz)), [err, setErr] = useState('')
   const today = todayISO(tz)
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i))
+  const cnt = (k: keyof M) => days.filter((d) => (meals[d]?.[k] ?? 1) === 1).length
 
   useEffect(() => { const t = setInterval(() => setLeft(msToMidnight(tz)), 1000); return () => clearInterval(t) }, [tz])
 
@@ -66,6 +67,11 @@ export default function MealWeek({ userId, tz, admin = false, onChange }: { user
                 </div>))}
             </li>)
         })}
+        <li className="rounded-2xl bg-emerald-50 p-4 ring-1 ring-emerald-100">
+          <p className="font-medium text-emerald-900">This week</p>
+          <p className="mt-3 text-emerald-900">Lunch <b>{cnt('lunch')}</b>/7</p>
+          <p className="mt-2 text-emerald-900">Dinner <b>{cnt('dinner')}</b>/7</p>
+        </li>
       </ul>
     </section>)
 }

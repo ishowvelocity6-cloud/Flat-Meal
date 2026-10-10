@@ -20,6 +20,7 @@ function Body({ tz }: { tz: string }) {
   return (
     <div className="space-y-8">
       {err && <p className="text-sm text-red-600">{err}</p>}
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
       <section className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
         <h2 className="font-semibold">Flat access code</h2>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -42,6 +43,7 @@ function Body({ tz }: { tz: string }) {
             </li>))}
         </ul>
       </section>
+      </div>
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-semibold">Override meals <span className="text-sm font-normal text-stone-500">(ignores the midnight lock)</span></h2>

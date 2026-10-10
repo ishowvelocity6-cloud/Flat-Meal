@@ -43,10 +43,10 @@ export default function AppShell({ title, children }: { title: string; children:
   ]
 
   return (
-    <div className="min-h-dvh bg-stone-50">
+    <div className="min-h-dvh bg-stone-50 lg:pl-64">
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stone-200 bg-white/90 px-3 py-2 backdrop-blur">
-        <button aria-label="Open menu" onClick={() => setMenu(true)} className="rounded-lg p-2 hover:bg-stone-100"><Menu /></button>
-        <div className="text-center leading-tight"><p className="font-semibold">{ctx.flat}</p><p className="text-xs text-stone-500">{title}</p></div>
+        <button aria-label="Open menu" onClick={() => setMenu(true)} className="rounded-lg p-2 hover:bg-stone-100 lg:hidden"><Menu /></button>
+        <div className="text-center leading-tight lg:text-left"><p className="font-semibold">{ctx.flat}</p><p className="text-xs text-stone-500">{title}</p></div>
         <div className="relative">
           <button aria-label="Profile" onClick={() => setProf((p) => !p)} className="rounded-full ring-2 ring-transparent hover:ring-emerald-200"><Avatar url={me.avatar_url} name={me.name ?? me.email} /></button>
           {prof && (<>
@@ -60,11 +60,11 @@ export default function AppShell({ title, children }: { title: string; children:
         </div>
       </header>
 
-      {menu && <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setMenu(false)} />}
-      <aside aria-hidden={!menu} className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white shadow-xl transition-transform ${menu ? 'translate-x-0' : '-translate-x-full'}`}>
+      {menu && <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setMenu(false)} />}
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white shadow-xl transition-transform lg:z-20 lg:w-64 lg:translate-x-0 lg:border-r lg:border-stone-200 lg:shadow-none ${menu ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between border-b border-stone-200 p-4">
           <div><p className="font-semibold">{ctx.flat}</p><p className="text-xs text-stone-500">{me.role === 'admin' ? 'Manager' : 'Flatmate'}</p></div>
-          <button aria-label="Close menu" onClick={() => setMenu(false)} className="rounded-lg p-2 hover:bg-stone-100"><X /></button>
+          <button aria-label="Close menu" onClick={() => setMenu(false)} className="rounded-lg p-2 hover:bg-stone-100 lg:hidden"><X /></button>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {nav.map(({ href, label, Icon }) => (
@@ -78,7 +78,7 @@ export default function AppShell({ title, children }: { title: string; children:
         </div>
       </aside>
 
-      <main className="mx-auto max-w-5xl p-4 sm:p-6">{children(ctx)}</main>
+      <main className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">{children(ctx)}</main>
       {edit && <ProfileModal me={me} onClose={() => setEdit(false)} onSaved={() => { setEdit(false); load() }} />}
     </div>)
 }

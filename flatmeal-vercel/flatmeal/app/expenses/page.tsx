@@ -57,6 +57,7 @@ function Body({ tz, admin }: { tz: string; admin: boolean }) {
         <div className={`${card} bg-emerald-50`}><p className="text-xs text-emerald-800">Per meal</p><p className="text-xl font-semibold text-emerald-800">{fmt(price)}</p></div>
       </div>
 
+      <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
       <div className={card}>
         <h2 className="mb-1 font-semibold">Monthly bills</h2>
         <p className="mb-2 text-xs text-stone-500">Counts meals up to today ({cooked.length} of {days.length} days). Bill = meals × per-meal price.</p>
@@ -85,6 +86,7 @@ function Body({ tz, admin }: { tz: string; admin: boolean }) {
               <div className="flex items-center gap-2"><span className="font-semibold">{fmt(Number(x.amount))}</span>
                 {admin && <button aria-label="Delete expense" onClick={() => confirm('Delete this expense?') && del(x.id)} className="rounded-lg p-2 text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>}</div>
             </li>))}</ul>)}
+      </div>
       </div>
     </div>)
 }

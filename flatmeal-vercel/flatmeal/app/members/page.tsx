@@ -11,7 +11,7 @@ function List() {
   }, [])
   return (<>
     <p className="mb-4 text-sm text-stone-500">{rows.length} flatmates</p>
-    <ul className="grid gap-3 sm:grid-cols-2">
+    <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {rows.map((r) => (
         <li key={r.id} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-stone-200">
           <Avatar url={r.avatar_url} name={r.name ?? r.email} size={48} />
